@@ -1,6 +1,7 @@
 import { api, sendMessage, storageGet, storageSet } from '../shared/browser.js';
 import { MSG, LANGUAGES, THEMES, DEFAULT_SETTINGS } from '../shared/constants.js';
 import { loadSettings } from '../shared/settings.js';
+import { PROVIDERS, detectProvider, normalizeBaseUrl } from '../background/providers.js';
 import { cache } from '../background/cache.js';
 
 const $ = (s) => document.querySelector(s);
@@ -16,10 +17,27 @@ function bind() {
   $('#jev-timeout').value = s.jev.timeoutMs;
   $('#jev-gate').checked = s.jev.gate;
 
+  const prov = $('#llm-provider');
+  for (const [v, label] of PROVIDERS) {
+    const o = document.createElement('option');
+    o.value = v;
+    o.textContent = label;
+    prov.append(o);
+  }
+  prov.value = s.llm.provider ?? 'auto';
+  const hint = () => {
+    const raw = $('#llm-url').value.trim();
+    if (!raw) return;
+    const p = detectProvider(raw, prov.value);
+    $('#llm-url-hint').textContent = `实际请求：${normalizeBaseUrl(raw, p)}（${PROVIDERS.find(([k]) => k === p)?.[1] ?? p}）`;
+  };
+  $('#llm-url').addEventListener('input', hint);
+  prov.addEventListener('change', hint);
   $('#llm-enabled').checked = s.llm.enabled;
   $('#llm-url').value = s.llm.baseUrl;
   $('#llm-key').value = s.llm.apiKey;
   $('#llm-model').value = s.llm.model;
+  hint();
 
   const lang = $('#target-lang');
   for (const [v, label] of LANGUAGES) {
@@ -75,6 +93,7 @@ function collect() {
   s.jev.gate = $('#jev-gate').checked;
 
   s.llm.enabled = $('#llm-enabled').checked;
+  s.llm.provider = $('#llm-provider').value;
   s.llm.baseUrl = $('#llm-url').value.trim() || DEFAULT_SETTINGS.llm.baseUrl;
   s.llm.apiKey = $('#llm-key').value.trim();
   s.llm.model = $('#llm-model').value.trim() || DEFAULT_SETTINGS.llm.model;
@@ -121,10 +140,22 @@ async function testEndpoint(btn) {
   const config =
     kind === 'jev'
       ? { baseUrl: settings.jev.baseUrl, apiKey: settings.jev.apiKey }
-      : { baseUrl: settings.llm.baseUrl, apiKey: settings.llm.apiKey };
+      : {
+          baseUrl: settings.llm.baseUrl,
+          apiKey: settings.llm.apiKey,
+          model: settings.llm.model,
+          provider: settings.llm.provider,
+        };
   const resp = await sendMessage({ type: MSG.TEST_ENDPOINT, kind, config });
-  btn.textContent = resp?.ok ? '连接正常 ✓' : `失败 ${resp?.status ?? resp?.error ?? ''}`;
+  btn.textContent = resp?.ok ? '连接正常 ✓' : `失败 ${resp?.status ?? ''}`;
   btn.classList.add(resp?.ok ? 'tested-ok' : 'tested-fail');
+  if (kind === 'llm') {
+    const msg = $('#llm-test-msg');
+    msg.className = 'test-msg ' + (resp?.ok ? 'ok' : 'fail');
+    msg.textContent = resp?.ok
+      ? `「Hello, world!」→「${resp.sample}」`
+      : `${resp?.error ?? '无响应'} · ${resp?.url ?? ''}`;
+  }
 }
 
 function navSpy() {

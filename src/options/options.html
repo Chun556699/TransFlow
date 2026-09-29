@@ -37,7 +37,7 @@
             <label class="switch"><input id="jev-enabled" type="checkbox" /><i></i>启用</label>
           </div>
           <label class="field"><span>端点地址</span>
-            <input id="jev-url" type="url" placeholder="https://api.typesafe.ai/v1/systemone" /></label>
+            <input id="jev-url" type="text" placeholder="https://api.typesafe.ai/v1/systemone" /></label>
           <div class="cols">
             <label class="field"><span>API Key</span>
               <input id="jev-key" type="password" placeholder="sk-…（自托管可留空）" /></label>
@@ -53,8 +53,13 @@
             <h3>LLM · 生成层</h3>
             <label class="switch"><input id="llm-enabled" type="checkbox" checked /><i></i>启用</label>
           </div>
-          <label class="field"><span>OpenAI 兼容地址</span>
-            <input id="llm-url" type="url" placeholder="https://api.openai.com/v1" /></label>
+          <div class="cols">
+            <label class="field"><span>接口格式</span>
+              <select id="llm-provider"></select></label>
+            <label class="field grow2"><span>接口地址</span>
+              <input id="llm-url" type="text" placeholder="https://api.openai.com/v1" /></label>
+          </div>
+          <p class="hint" id="llm-url-hint">可只填域名，会自动补全 https 与路径（如百炼自动补 /compatible-mode/v1）；误贴的 /chat/completions 也会自动去掉。</p>
           <div class="cols">
             <label class="field"><span>API Key</span>
               <input id="llm-key" type="password" placeholder="sk-…" /></label>
@@ -72,7 +77,10 @@
                 <option value="deepseek-chat">deepseek-chat · DeepSeek</option>
               </datalist></label>
           </div>
-          <button class="btn ghost" data-test="llm" type="button">测试连接</button>
+          <div class="test-row">
+            <button class="btn ghost" data-test="llm" type="button">测试连接</button>
+            <span id="llm-test-msg" class="test-msg"></span>
+          </div>
         </div>
       </section>
 

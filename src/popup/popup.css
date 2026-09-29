@@ -6,14 +6,6 @@
   --line: #e8ebf3;
   font-family: system-ui, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #161a23;
-    --fg: #e8eaf2;
-    --muted: #8a92a8;
-    --line: #2a3040;
-  }
-}
 * {
   box-sizing: border-box;
 }

@@ -5,19 +5,26 @@
 }
 .tf-translation {
   display: block;
+  font: inherit;
   font-size: calc(1em * var(--tf-scale));
-  line-height: 1.55;
-  margin-top: 0.2em;
-  word-break: break-word;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
+  text-transform: none;
+  color: inherit;
+  margin: 0.25em 0 0;
+  padding: 0;
+  overflow-wrap: anywhere;
   unicode-bidi: plaintext;
-  text-align: start;
 }
-a + .tf-translation,
-button + .tf-translation,
-label + .tf-translation {
+.tf-translation[data-tf-inline] {
   display: inline;
-  margin-top: 0;
-  margin-left: 0.35em;
+  margin: 0 0 0 0.35em;
+}
+.tf-translation[data-tf-wrap] {
+  flex-basis: 100%;
+  width: 100%;
+  grid-column: 1 / -1;
 }
 
 /* 主题：细线下划线 */

@@ -1,3 +1,4 @@
+import { LlmClient } from './llm.js';
 import { api } from '../shared/browser.js';
 import { MSG } from '../shared/constants.js';
 import { loadSettings } from '../shared/settings.js';
@@ -26,10 +27,13 @@ async function handleTranslate(msg) {
 async function testEndpoint(msg) {
   const { kind, config } = msg;
   if (kind === 'llm') {
-    const res = await fetch(`${String(config.baseUrl).replace(/\/+$/, '')}/models`, {
-      headers: config.apiKey ? { authorization: `Bearer ${config.apiKey}` } : {},
-    });
-    return { ok: res.ok, status: res.status };
+    const llm = new LlmClient({ ...config, timeoutMs: 20000 });
+    try {
+      const [sample] = await llm.translate(['Hello, world!'], 'zh-CN');
+      return { ok: true, sample, provider: llm.provider, url: llm.baseUrl };
+    } catch (e) {
+      return { ok: false, status: e.status, error: e.message, provider: llm.provider, url: llm.baseUrl };
+    }
   }
   if (kind === 'jev') {
     const res = await fetch(config.baseUrl, {

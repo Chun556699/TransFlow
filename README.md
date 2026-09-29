@@ -6,7 +6,7 @@
 
 ## 特性
 
-- **双模型管线**：Jev（TypeSafe SystemOne，70–500ms）逐段判断「是否值得翻译」，LLM（任意 OpenAI 兼容端点）批量生成译文；Jev 不可用时自动降级为本地启发式规则，开箱即用
+- **双模型管线**：Jev（TypeSafe SystemOne，70–500ms）逐段判断「是否值得翻译」，LLM 批量生成译文（支持 OpenAI 兼容 / Anthropic Claude / Google Gemini / Azure OpenAI / Ollama 原生，按域名自动识别，地址自动补全 https 与路径）；Jev 不可用时自动降级为本地启发式规则，开箱即用
 - **秒翻体验**：视口懒翻译（IntersectionObserver）、批量请求、IndexedDB 译文缓存、动态内容增量扫描
 - **高颜值双语样式**：5 套主题（细线下划线 / 磨砂卡片 / 高亮 / 柔和灰显 / 悬停显字）+ 自定义强调色、字号、CSS
 - **视频字幕**：YouTube 双语字幕（拦截播放器 timedtext 请求复用其签名 URL，绕开 PoToken 限制；ASR 逐词字幕自动断句合并）；其他站点原生 CC 轨道兜底翻译
@@ -28,7 +28,7 @@ npm run zip      # 额外产出可分发 zip
 
 ## 使用
 
-1. 打开设置页，填 **LLM** 端点（任意 OpenAI 兼容 `/chat/completions`，如 OpenAI / DeepSeek / 本地 vLLM / 阿里百炼 `…/compatible-mode/v1`）与 API Key、模型名
+1. 打开设置页，填 **LLM** 端点（选「接口格式」或保持自动识别；OpenAI / DeepSeek / vLLM / 阿里百炼只填域名即可，Claude、Gemini、Azure、Ollama 同样支持）与 API Key、模型名
    - 推荐：阿里百炼 **qwen-mt-turbo**（专用翻译模型，逐条调用，并发池并行；支持术语表）；或任意通用对话模型（走 JSON 批量，如 `qwen3.8-flash`、`gpt-4o-mini`）
 2. （可选）填 **Jev** 端点：官方 `https://api.typesafe.ai/v1/systemone` 或自托管兼容端点（decider-2b、openjev 等）
 3. 网页中点击扩展图标 →「翻译此页」，或按 `Alt+T`；双语译文随滚动懒加载
@@ -46,7 +46,8 @@ content script (轻)
 background (SW / event page)
  ├─ cache       IndexedDB 译文缓存 (sha256 key)
  ├─ jev         SystemOne 决策层（Noul 过滤，一次请求并行判 100 段）
- ├─ llm         OpenAI 兼容批量翻译（JSON 数组对齐、注入防护）
+ ├─ llm         批量翻译（JSON 数组对齐、注入防护）
+ ├─ providers   多接口格式适配（OpenAI/Anthropic/Gemini/Azure/Ollama）
  └─ translate   管线编排 + 并发池 + 重试退避
 ```
 

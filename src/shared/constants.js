@@ -21,6 +21,7 @@ export const DEFAULT_SETTINGS = {
   },
   llm: {
     enabled: true,
+    provider: 'auto',
     baseUrl: 'https://api.openai.com/v1',
     apiKey: '',
     model: 'gpt-4o-mini',
@@ -39,7 +40,7 @@ export const DEFAULT_SETTINGS = {
   appearance: {
     theme: 'underline',
     accent: '#4f7cff',
-    fontScale: 0.95,
+    fontScale: 1,
     customCss: '',
     translationOnly: false,
   },

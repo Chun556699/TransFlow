@@ -59,6 +59,7 @@ export async function translateItems(items, targetLang, settings) {
       baseUrl: settings.llm.baseUrl,
       apiKey: settings.llm.apiKey,
       model: settings.llm.model,
+      provider: settings.llm.provider,
       temperature: settings.llm.temperature,
       glossary: settings.pipeline.glossary,
     });

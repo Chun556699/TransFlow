@@ -60,11 +60,16 @@ export function insertTranslation(el, text) {
   const node = document.createElement('span');
   node.className = 'tf-translation';
   node.textContent = text;
-  if (INLINE_SEG.has(el.tagName)) {
-    el.insertAdjacentElement('afterend', node);
-  } else {
-    el.append(node);
+  const display = getComputedStyle(el).display;
+  if (INLINE_SEG.has(el.tagName) || display.startsWith('inline') && !display.includes('flex') && !display.includes('grid')) {
+    node.dataset.tfInline = '';
+    if (INLINE_SEG.has(el.tagName)) el.insertAdjacentElement('afterend', node);
+    else el.append(node);
+    return;
   }
+  // flex/grid 容器：译文独占一行，不挤压原有子项
+  if (/flex|grid/.test(display)) node.dataset.tfWrap = '';
+  el.append(node);
 }
 
 export function clearTranslations() {
