@@ -1,0 +1,121 @@
+:root {
+  --tf-accent: #4f7cff;
+  --bg: #ffffff;
+  --fg: #1d2433;
+  --muted: #7a8299;
+  --line: #e8ebf3;
+  font-family: system-ui, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  width: 300px;
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 13px;
+}
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+.brand {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.brand strong {
+  font-size: 14px;
+  letter-spacing: 0.2px;
+}
+.status {
+  font-size: 11px;
+  color: var(--muted);
+}
+.gear {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 17px;
+  padding: 4px;
+}
+.gear:hover {
+  color: var(--tf-accent);
+}
+main {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--tf-accent), #7c9bff);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.05s ease;
+}
+.toggle:hover {
+  filter: brightness(1.06);
+}
+.toggle:active {
+  transform: scale(0.98);
+}
+.toggle.off {
+  background: var(--line);
+  color: var(--fg);
+}
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+}
+.toggle.off .dot {
+  background: var(--muted);
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.row.check {
+  justify-content: flex-start;
+  color: var(--fg);
+}
+.row.check input {
+  accent-color: var(--tf-accent);
+}
+select {
+  flex: 0 0 150px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 12px;
+}
+.stats {
+  margin: 0;
+  font-size: 11px;
+  color: var(--muted);
+  min-height: 14px;
+}

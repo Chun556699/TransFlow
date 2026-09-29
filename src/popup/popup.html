@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="popup.css" />
+    <title>TransFlow</title>
+  </head>
+  <body>
+    <header class="bar">
+      <img class="logo" src="icons/icon48.png" alt="" />
+      <div class="brand">
+        <strong>TransFlow</strong>
+        <span id="status" class="status">…</span>
+      </div>
+      <a id="options" class="gear" title="设置" href="#">⚙</a>
+    </header>
+
+    <main>
+      <button id="toggle" class="toggle" type="button">
+        <span class="dot"></span><span id="toggle-text">翻译此页</span>
+      </button>
+
+      <label class="row">
+        <span>目标语言</span>
+        <select id="lang"></select>
+      </label>
+
+      <label class="row check">
+        <input id="autohost" type="checkbox" />
+        <span>始终自动翻译此网站</span>
+      </label>
+
+      <label class="row check">
+        <input id="subs" type="checkbox" checked />
+        <span>视频字幕翻译</span>
+      </label>
+
+      <p id="stats" class="stats"></p>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

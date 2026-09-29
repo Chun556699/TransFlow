@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="options.css" />
+    <title>TransFlow 设置</title>
+  </head>
+  <body>
+    <aside class="side">
+      <div class="side-brand">
+        <img src="icons/icon48.png" alt="" />
+        <div>
+          <strong>TransFlow</strong>
+          <span>Jev × LLM 极速翻译</span>
+        </div>
+      </div>
+      <nav id="nav">
+        <a href="#models" class="on">模型服务</a>
+        <a href="#translate">翻译</a>
+        <a href="#appearance">外观</a>
+        <a href="#subtitle">视频字幕</a>
+        <a href="#sites">站点规则</a>
+        <a href="#data">缓存与隐私</a>
+      </nav>
+      <p class="side-foot">v<span id="ver"></span> · MIT License</p>
+    </aside>
+
+    <main>
+      <section id="models" class="card">
+        <h2>模型服务</h2>
+        <p class="hint">Jev 决策模型负责快速过滤与路由（可选，不配也能用）；LLM 大模型负责生成译文。两端点均可自定义。</p>
+
+        <div class="group">
+          <div class="group-head">
+            <h3>Jev · 快决策层</h3>
+            <label class="switch"><input id="jev-enabled" type="checkbox" /><i></i>启用</label>
+          </div>
+          <label class="field"><span>端点地址</span>
+            <input id="jev-url" type="text" placeholder="https://api.typesafe.ai/v1/systemone" /></label>
+          <div class="cols">
+            <label class="field"><span>API Key</span>
+              <input id="jev-key" type="password" placeholder="sk-…（自托管可留空）" /></label>
+            <label class="field"><span>超时 (ms)</span>
+              <input id="jev-timeout" type="number" min="300" max="15000" /></label>
+          </div>
+          <label class="check"><input id="jev-gate" type="checkbox" />开启智能过滤（跳过无需翻译的文本，省 LLM 调用）</label>
+          <button class="btn ghost" data-test="jev" type="button">测试连接</button>
+        </div>
+
+        <div class="group">
+          <div class="group-head">
+            <h3>LLM · 生成层</h3>
+            <label class="switch"><input id="llm-enabled" type="checkbox" checked /><i></i>启用</label>
+          </div>
+          <div class="cols">
+            <label class="field"><span>接口格式</span>
+              <select id="llm-provider"></select></label>
+            <label class="field grow2"><span>接口地址</span>
+              <input id="llm-url" type="text" placeholder="https://api.openai.com/v1" /></label>
+          </div>
+          <p class="hint" id="llm-url-hint">可只填域名，会自动补全 https 与路径（如百炼自动补 /compatible-mode/v1）；误贴的 /chat/completions 也会自动去掉。</p>
+          <div class="cols">
+            <label class="field"><span>API Key</span>
+              <input id="llm-key" type="password" placeholder="sk-…" /></label>
+            <div class="field"><span>模型名</span>
+              <div class="model-pick">
+                <input id="llm-model" type="text" autocomplete="off" placeholder="选择或直接输入，如 gpt-4o-mini" />
+                <button id="fetch-models" class="btn ghost" type="button">获取模型</button>
+                <div id="model-menu" class="model-menu" role="listbox" hidden></div>
+              </div>
+              <span id="model-msg" class="test-msg"></span>
+            </div>
+          </div>
+          <div class="test-row">
+            <button class="btn ghost" data-test="llm" type="button">测试连接</button>
+            <span id="llm-test-msg" class="test-msg"></span>
+          </div>
+        </div>
+      </section>
+
+      <section id="translate" class="card">
+        <h2>翻译</h2>
+        <label class="field"><span>目标语言</span><select id="target-lang"></select></label>
+        <div class="cols three">
+          <label class="field"><span>每批段落</span><input id="batch" type="number" min="4" max="60" /></label>
+          <label class="field"><span>每批字符</span><input id="maxchars" type="number" min="1000" max="20000" step="500" /></label>
+          <label class="field"><span>并发数</span><input id="concurrency" type="number" min="1" max="8" /></label>
+        </div>
+        <label class="field"><span>术语表（每行：原文=译文）</span>
+          <textarea id="glossary" rows="3" placeholder="Kubernetes=K8s&#10;Devin=Devin"></textarea></label>
+        <label class="check"><input id="sel-enabled" type="checkbox" />划词翻译（选中文字出现浮窗）</label>
+        <label class="check"><input id="sel-input" type="checkbox" />输入框翻译（聚焦输入框出现翻译按钮，可替换原文）</label>
+      </section>
+
+      <section id="appearance" class="card">
+        <h2>外观</h2>
+        <div id="themes" class="themes"></div>
+        <div class="cols">
+          <label class="field"><span>强调色</span><input id="accent" type="color" /></label>
+          <label class="field"><span>译文字号</span><input id="fontscale" type="range" min="0.7" max="1.2" step="0.05" /></label>
+        </div>
+        <label class="check"><input id="translation-only" type="checkbox" />仅显示译文（隐藏原文）</label>
+        <label class="field"><span>自定义 CSS</span>
+          <textarea id="custom-css" rows="3" placeholder=".tf-translation { font-style: italic }"></textarea></label>
+      </section>
+
+      <section id="subtitle" class="card">
+        <h2>视频字幕</h2>
+        <label class="check"><input id="sub-enabled" type="checkbox" />启用 YouTube 字幕翻译（需先打开播放器原生字幕）</label>
+        <label class="check"><input id="sub-generic" type="checkbox" />其他站点视频：翻译原生 CC 轨道</label>
+        <label class="check"><input id="sub-hidenative" type="checkbox" />隐藏播放器原生字幕（仅显示译文层）</label>
+        <div class="cols three">
+          <label class="field"><span>双语顺序</span>
+            <select id="sub-order">
+              <option value="translated-below">原文上 · 译文下</option>
+              <option value="translated-top">译文上 · 原文下</option>
+              <option value="translated-only">仅译文</option>
+            </select></label>
+          <label class="field"><span>字号</span><input id="sub-fontsize" type="number" min="14" max="48" /></label>
+          <label class="field"><span>位置</span>
+            <select id="sub-pos"><option value="bottom">底部</option><option value="top">顶部</option></select></label>
+        </div>
+      </section>
+
+      <section id="sites" class="card">
+        <h2>站点规则</h2>
+        <div class="cols">
+          <label class="field"><span>自动翻译站点（每行一个域名）</span>
+            <textarea id="auto-hosts" rows="3" placeholder="arxiv.org&#10;developer.mozilla.org"></textarea></label>
+          <label class="field"><span>永不翻译站点</span>
+            <textarea id="never-hosts" rows="3" placeholder="mail.google.com"></textarea></label>
+        </div>
+      </section>
+
+      <section id="data" class="card">
+        <h2>缓存与隐私</h2>
+        <p class="hint">译文缓存在本机 IndexedDB；API Key 仅存本机 storage。网页文本会发送到你配置的模型端点，请自行评估隐私。</p>
+        <div class="row-btns">
+          <button id="import-cfg" class="btn ghost" type="button">导入配置 JSON</button>
+          <button id="clear-cache" class="btn ghost" type="button">清空译文缓存</button>
+          <button id="reset" class="btn danger" type="button">恢复全部默认设置</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="savebar">
+      <span id="saved" class="saved"></span>
+      <button id="save" class="btn primary" type="button">保存设置</button>
+    </footer>
+
+    <script src="options.js"></script>
+  </body>
+</html>

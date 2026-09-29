@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b82ff"/><stop offset="1" stop-color="#7a5cff"/>
+    </linearGradient>
+    <linearGradient id="s" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#g)"/>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#s)"/>
+  <rect x="76" y="92" width="232" height="204" rx="44" fill="#fff"/>
+  <path d="M130 296 l-18 58 l66 -58z" fill="#fff"/>
+  <text x="192" y="244" text-anchor="middle" font-family="PingFang SC, Hiragino Sans GB, sans-serif" font-weight="700" font-size="150" fill="#4a6cff">文</text>
+  <rect x="220" y="232" width="216" height="188" rx="44" fill="#fff" fill-opacity=".2" stroke="#fff" stroke-width="14"/>
+  <path d="M390 420 l18 50 l-62 -50z" fill="#fff"/>
+  <text x="328" y="380" text-anchor="middle" font-family="SF Pro Rounded, Helvetica Neue, sans-serif" font-weight="800" font-size="138" fill="#fff">A</text>
+</svg></body></html>
