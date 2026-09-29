@@ -74,7 +74,8 @@ export class YoutubeSubs {
     const container = document.querySelector('.html5-video-player');
     if (!video || !container) return;
     this.overlay.attach(video, container);
-    this.overlay.setCues(cues.map((c) => ({ ...c, src: c.text, tgt: null })));
+    const ocues = cues.map((c) => ({ ...c, src: c.text, tgt: null }));
+    this.overlay.setCues(ocues);
 
     // 分批翻译整轨
     const CHUNK = 30;
@@ -91,10 +92,10 @@ export class YoutubeSubs {
         continue;
       }
       const results = resp?.results ?? {};
-      slice.forEach((c, j) => {
-        c.tgt = results[`c${i + j}`] ?? null;
+      slice.forEach((_, j) => {
+        ocues[i + j].tgt = results[`c${i + j}`] ?? null;
       });
-      this.overlay.setCues(cues);
+      this.overlay.setCues(ocues);
     }
   }
 

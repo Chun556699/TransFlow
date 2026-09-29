@@ -16,7 +16,7 @@ export class PageTranslator {
   constructor() {
     this.enabled = false;
     this.targetLang = 'zh-CN';
-    this.stats = { queued: 0, done: 0, failed: 0, cached: 0, jevSkipped: 0 };
+    this.stats = { queued: 0, done: 0, failed: 0, cached: 0, jevSkipped: 0, skipped: 0 };
     this.queue = new Map();
     this.batch = [];
     this.flushTimer = 0;
@@ -119,16 +119,21 @@ export class PageTranslator {
     const meta = resp?.meta ?? {};
     this.stats.cached += meta.cached ?? 0;
     this.stats.jevSkipped += meta.jevSkipped ?? 0;
+    let noText = 0;
     for (const it of items) {
       it.el.classList.remove('tf-pending');
+      if (!it.el.classList.length) it.el.removeAttribute('class');
       const text = results[it.key];
       if (text) {
         insertTranslation(it.el, text);
         this.stats.done += 1;
       } else {
-        this.stats.failed += 1;
+        noText += 1;
       }
     }
+    const realFailed = meta.failed ?? noText;
+    this.stats.failed += realFailed;
+    this.stats.skipped += Math.max(0, noText - realFailed);
     this.onStats?.();
   }
 

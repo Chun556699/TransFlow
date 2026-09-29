@@ -8,16 +8,18 @@ const SKIPPED = Symbol('skipped');
 
 export async function translateItems(items, targetLang, settings) {
   const out = {};
-  const meta = { cached: 0, jevSkipped: 0, failed: 0, translated: 0 };
+  const meta = { cached: 0, jevSkipped: 0, langSkipped: 0, failed: 0, translated: 0 };
 
   const pending = items.filter((it) => {
     if (!isTranslatableText(it.text)) {
       out[it.key] = null;
+      meta.langSkipped += 1;
       return false;
     }
     const src = guessLang(it.text);
     if (sameLang(src, targetLang)) {
       out[it.key] = null;
+      meta.langSkipped += 1;
       return false;
     }
     it._src = src;

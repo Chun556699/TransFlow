@@ -5,6 +5,7 @@ import { loadSettings, matchHost } from '../shared/settings.js';
 const $ = (s) => document.querySelector(s);
 let tab = null;
 let settings = null;
+let restricted = false;
 
 async function activeTab() {
   return new Promise((resolve) => {
@@ -26,6 +27,7 @@ function toTab(msg) {
 }
 
 async function refresh() {
+  if (restricted) return;
   const state = await toTab({ type: MSG.PAGE_STATE });
   const enabled = state?.enabled ?? false;
   $('#toggle').classList.toggle('off', !enabled);
@@ -33,7 +35,7 @@ async function refresh() {
   $('#status').textContent = enabled ? '翻译中' : '未开启';
   const st = state?.stats;
   $('#stats').textContent = st
-    ? `已译 ${st.done} · 缓存 ${st.cached}${st.jevSkipped ? ` · Jev过滤 ${st.jevSkipped}` : ''}${st.failed ? ` · 失败 ${st.failed}` : ''}`
+    ? `已译 ${st.done} · 缓存 ${st.cached}${st.skipped ? ` · 过滤 ${st.skipped}` : ''}${st.jevSkipped ? ` · Jev过滤 ${st.jevSkipped}` : ''}${st.failed ? ` · 失败 ${st.failed}` : ''}`
     : '';
 }
 
@@ -57,7 +59,7 @@ async function boot() {
   } catch {
     host = '';
   }
-  const restricted = !host || !/^https?:/.test(tab?.url ?? '');
+  restricted = !host || !/^https?:/.test(tab?.url ?? '');
   if (restricted) {
     $('#toggle').disabled = true;
     $('#toggle-text').textContent = '此页面不可翻译';
