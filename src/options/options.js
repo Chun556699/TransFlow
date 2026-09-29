@@ -7,6 +7,101 @@ import { cache } from '../background/cache.js';
 const $ = (s) => document.querySelector(s);
 let settings = null;
 
+const PRESET_MODELS = [
+  ['qwen-mt-turbo', '阿里专用翻译 · 高性价比'],
+  ['qwen-mt-plus', '阿里专用翻译 · 质量最高'],
+  ['qwen-mt-flash', '阿里专用翻译 · 最速'],
+  ['qwen3.8-flash', '通用 · JSON 批量省请求'],
+  ['deepseek-v4.1-flash', '通用'],
+  ['glm-5.3', '通用'],
+  ['kimi-k3', '通用'],
+  ['gpt-4o-mini', 'OpenAI'],
+  ['deepseek-chat', 'DeepSeek'],
+];
+let fetchedModels = null;
+
+function renderModelMenu(show = true) {
+  const menu = $('#model-menu');
+  const q = $('#llm-model').value.trim().toLowerCase();
+  const all = fetchedModels ? fetchedModels.map((m) => [m, '']) : PRESET_MODELS;
+  const list = all.filter(([m]) => !q || m.toLowerCase().includes(q) || fetchedModels === null);
+  menu.replaceChildren();
+  const head = document.createElement('div');
+  head.className = 'mm-head';
+  head.textContent = fetchedModels ? `可用模型 ${list.length}/${fetchedModels.length}` : '推荐模型（点「获取模型」拉取你的账号可用列表）';
+  menu.append(head);
+  for (const [m, note] of list.slice(0, 300)) {
+    const o = document.createElement('div');
+    o.className = 'mm-item' + (m === $('#llm-model').value.trim() ? ' on' : '');
+    o.setAttribute('role', 'option');
+    o.dataset.value = m;
+    const name = document.createElement('b');
+    name.textContent = m;
+    o.append(name);
+    if (note) {
+      const n = document.createElement('small');
+      n.textContent = note;
+      o.append(n);
+    }
+    if (/(^|[-/])(mt|translat)/i.test(m)) o.classList.add('mt');
+    menu.append(o);
+  }
+  if (!list.length) {
+    const e = document.createElement('div');
+    e.className = 'mm-empty';
+    e.textContent = '无匹配，按回车使用当前输入的模型名';
+    menu.append(e);
+  }
+  menu.hidden = !show;
+}
+
+function bindModelPicker() {
+  const input = $('#llm-model');
+  const menu = $('#model-menu');
+  input.addEventListener('focus', () => renderModelMenu());
+  input.addEventListener('input', () => renderModelMenu());
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === 'Escape') menu.hidden = true;
+  });
+  menu.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    const it = e.target.closest('.mm-item');
+    if (!it) return;
+    input.value = it.dataset.value;
+    menu.hidden = true;
+  });
+  document.addEventListener('mousedown', (e) => {
+    if (!e.target.closest('.model-pick')) menu.hidden = true;
+  });
+  $('#fetch-models').addEventListener('click', fetchModels);
+}
+
+async function fetchModels() {
+  collect();
+  const btn = $('#fetch-models');
+  const msg = $('#model-msg');
+  btn.disabled = true;
+  btn.textContent = '获取中…';
+  const resp = await sendMessage({
+    type: MSG.LIST_MODELS,
+    config: { baseUrl: settings.llm.baseUrl, apiKey: settings.llm.apiKey, provider: settings.llm.provider },
+  }).catch((e) => ({ ok: false, error: String(e) }));
+  btn.disabled = false;
+  btn.textContent = '获取模型';
+  if (resp?.ok && resp.models?.length) {
+    fetchedModels = resp.models;
+    msg.className = 'test-msg ok';
+    msg.textContent = `已获取 ${resp.models.length} 个模型，可点选或继续手动输入`;
+    $('#llm-model').focus();
+    renderModelMenu();
+  } else {
+    msg.className = 'test-msg fail';
+    msg.textContent = resp?.ok
+      ? '接口未返回模型列表，请手动输入模型名'
+      : `获取失败 ${resp?.status ?? ''} ${resp?.error ?? ''} · ${resp?.url ?? ''}`.trim();
+  }
+}
+
 function bind() {
   const s = settings;
   $('#ver').textContent = api.runtime.getManifest().version;
@@ -175,6 +270,7 @@ function navSpy() {
 async function boot() {
   settings = await loadSettings();
   bind();
+  bindModelPicker();
   navSpy();
   $('#save').addEventListener('click', save);
   document.querySelectorAll('[data-test]').forEach((b) => b.addEventListener('click', () => testEndpoint(b)));

@@ -63,19 +63,14 @@
           <div class="cols">
             <label class="field"><span>API Key</span>
               <input id="llm-key" type="password" placeholder="sk-…" /></label>
-            <label class="field"><span>模型名</span>
-              <input id="llm-model" type="text" list="llm-models" placeholder="gpt-4o-mini" />
-              <datalist id="llm-models">
-                <option value="qwen-mt-turbo">qwen-mt-turbo · 阿里专用翻译 · 高性价比</option>
-                <option value="qwen-mt-plus">qwen-mt-plus · 阿里专用翻译 · 质量最高</option>
-                <option value="qwen-mt-flash">qwen-mt-flash · 阿里专用翻译 · 最速</option>
-                <option value="qwen3.8-flash">qwen3.8-flash · 通用 · JSON 批量省请求</option>
-                <option value="deepseek-v4.1-flash">deepseek-v4.1-flash · 通用</option>
-                <option value="glm-5.3">glm-5.3 · 通用</option>
-                <option value="kimi-k3">kimi-k3 · 通用</option>
-                <option value="gpt-4o-mini">gpt-4o-mini · OpenAI</option>
-                <option value="deepseek-chat">deepseek-chat · DeepSeek</option>
-              </datalist></label>
+            <div class="field"><span>模型名</span>
+              <div class="model-pick">
+                <input id="llm-model" type="text" autocomplete="off" placeholder="选择或直接输入，如 gpt-4o-mini" />
+                <button id="fetch-models" class="btn ghost" type="button">获取模型</button>
+                <div id="model-menu" class="model-menu" role="listbox" hidden></div>
+              </div>
+              <span id="model-msg" class="test-msg"></span>
+            </div>
           </div>
           <div class="test-row">
             <button class="btn ghost" data-test="llm" type="button">测试连接</button>

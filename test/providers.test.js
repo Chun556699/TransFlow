@@ -60,3 +60,20 @@ test('buildRequest: 各家请求与解析', () => {
   assert.match(z.url, /\/deployments\/d\/chat\/completions\?api-version=/);
   assert.equal(z.headers['api-key'], 'K');
 });
+
+test('buildModelsRequest: 各家模型列表接口', async () => {
+  const { buildModelsRequest } = await import('../src/background/providers.js');
+  const o = buildModelsRequest('openai', { baseUrl: 'https://x.com/v1', apiKey: 'k' });
+  assert.equal(o.url, 'https://x.com/v1/models');
+  assert.deepEqual(o.parse({ data: [{ id: 'b' }, { id: 'a' }, { id: 'a' }] }), ['a', 'b']);
+  const g = buildModelsRequest('gemini', { baseUrl: 'https://g/v1beta', apiKey: 'k' });
+  assert.deepEqual(
+    g.parse({ models: [{ name: 'models/gemini-x', supportedGenerationMethods: ['generateContent'] }, { name: 'models/emb', supportedGenerationMethods: ['embedContent'] }] }),
+    ['gemini-x'],
+  );
+  const l = buildModelsRequest('ollama', { baseUrl: 'http://localhost:11434' });
+  assert.equal(l.url, 'http://localhost:11434/api/tags');
+  assert.deepEqual(l.parse({ models: [{ name: 'qwen3:8b' }] }), ['qwen3:8b']);
+  const a = buildModelsRequest('anthropic', { baseUrl: 'https://api.anthropic.com/v1', apiKey: 'k' });
+  assert.equal(a.headers['x-api-key'], 'k');
+});

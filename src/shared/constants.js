@@ -5,6 +5,7 @@ export const MSG = {
   SET_LANG: 'tf:set-lang',
   SUBTITLE_EVENT: 'tf:subtitle-event',
   TEST_ENDPOINT: 'tf:test-endpoint',
+  LIST_MODELS: 'tf:list-models',
   TRANSLATE_SELECTION: 'tf:translate-selection',
 };
 

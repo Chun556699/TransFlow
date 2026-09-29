@@ -3,6 +3,8 @@ import { api } from '../shared/browser.js';
 import { MSG } from '../shared/constants.js';
 import { loadSettings } from '../shared/settings.js';
 import { translateItems } from './translate.js';
+import { buildModelsRequest, detectProvider, normalizeBaseUrl } from './providers.js';
+import { timeoutSignal } from './pool.js';
 import { cache } from './cache.js';
 
 api.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
@@ -15,8 +17,22 @@ api.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     testEndpoint(msg).then(sendResponse, (e) => sendResponse({ ok: false, error: String(e) }));
     return true;
   }
+  if (msg.type === MSG.LIST_MODELS) {
+    listModels(msg.config ?? {}).then(sendResponse, (e) => sendResponse({ ok: false, error: String(e) }));
+    return true;
+  }
   return false;
 });
+
+async function listModels(config) {
+  const provider = detectProvider(config.baseUrl, config.provider);
+  const baseUrl = normalizeBaseUrl(config.baseUrl, provider);
+  const req = buildModelsRequest(provider, { baseUrl, apiKey: config.apiKey });
+  const { signal, done } = timeoutSignal(15000);
+  const res = await fetch(req.url, { headers: req.headers, signal }).finally(done);
+  if (!res.ok) return { ok: false, status: res.status, url: req.url, error: (await res.text()).slice(0, 160) };
+  return { ok: true, models: req.parse(await res.json()), url: req.url };
+}
 
 async function handleTranslate(msg) {
   const settings = await loadSettings();

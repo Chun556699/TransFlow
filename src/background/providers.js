@@ -154,3 +154,45 @@ function openaiParse(j) {
   if (Array.isArray(c)) return c.map((p) => p.text ?? '').join('');
   return c ?? j.choices?.[0]?.text ?? '';
 }
+
+// 模型列表接口：返回 {url, headers, parse(json) -> string[]}
+export function buildModelsRequest(provider, cfg) {
+  const base = cfg.baseUrl;
+  const key = cfg.apiKey;
+  const ids = (arr, f) => [...new Set((arr ?? []).map(f).filter(Boolean))].sort();
+  switch (provider) {
+    case 'anthropic':
+      return {
+        url: `${base}/models?limit=1000`,
+        headers: {
+          'x-api-key': key,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        parse: (j) => ids(j.data, (m) => m.id),
+      };
+    case 'gemini':
+      return {
+        url: `${base}/models?pageSize=1000`,
+        headers: { 'x-goog-api-key': key },
+        parse: (j) =>
+          ids(
+            (j.models ?? []).filter((m) => !m.supportedGenerationMethods || m.supportedGenerationMethods.includes('generateContent')),
+            (m) => String(m.name ?? '').replace(/^models\//, ''),
+          ),
+      };
+    case 'ollama':
+      return { url: `${base}/api/tags`, headers: {}, parse: (j) => ids(j.models, (m) => m.name ?? m.model) };
+    case 'azure': {
+      const [path, query = ''] = base.split('?');
+      const ver = /api-version=/.test(query) ? query : `${query ? `${query}&` : ''}api-version=2024-10-21`;
+      return { url: `${path.replace(/\/deployments\/[^/]+$/, '')}/models?${ver}`, headers: { 'api-key': key }, parse: (j) => ids(j.data, (m) => m.id) };
+    }
+    default:
+      return {
+        url: `${base}/models`,
+        headers: key ? { authorization: `Bearer ${key}` } : {},
+        parse: (j) => ids(Array.isArray(j) ? j : (j.data ?? j.models), (m) => (typeof m === 'string' ? m : (m.id ?? m.name))),
+      };
+  }
+}
