@@ -1,8 +1,20 @@
+<p align="center"><img src="docs/images/marquee-1400x560.png" alt="TransFlow — Jev × LLM 极速双语网页翻译" width="900" /></p>
+
 # TransFlow
 
 高性能、低占用的双语网页翻译浏览器扩展 —— **Jev 决策模型**做毫秒级过滤与路由，**LLM 大模型**生成译文，两端点均可在设置中自定义。支持网页双语对照翻译与视频字幕翻译。
 
 [English below](#english) · 调研报告见 [docs/research.md](docs/research.md)
+
+## 下载安装
+
+到 [**Releases**](https://github.com/Chun556699/TransFlow---/releases) 下载：`transflow-chrome.zip`（Chrome / Edge / Opera）或 `transflow-firefox.zip`（Firefox），解压后按下方「安装」加载即可。也可以自己构建：`npm install && npm run zip`。
+
+## 效果预览
+
+| 划词双语浮窗 | 视频双语字幕 | 设置页（端点自定义） |
+| --- | --- | --- |
+| ![](docs/images/scene-translate.png) | ![](docs/images/scene-youtube.png) | ![](docs/images/scene-options.png) |
 
 ## 特性
 
@@ -55,7 +67,7 @@ background (SW / event page)
 
 ## English
 
-Fast, low-footprint bilingual webpage-translation extension. A **Jev decision model** (TypeSafe SystemOne) gates which segments are worth translating in milliseconds; an **OpenAI-compatible LLM** generates the translations. Both endpoints are user-configurable in settings.
+Fast, low-footprint bilingual webpage-translation extension. Prebuilt zips are attached to [Releases](https://github.com/Chun556699/TransFlow---/releases). A **Jev decision model** (TypeSafe SystemOne) gates which segments are worth translating in milliseconds; an **OpenAI-compatible LLM** generates the translations. Both endpoints are user-configurable in settings.
 
 - Bilingual page translation with lazy viewport scanning, batching, IndexedDB cache, 5 translation themes + custom CSS
 - YouTube bilingual subtitles via timedtext interception (reuses the player's signed URL, sidestepping PoToken); generic `<video>` CC-track fallback
