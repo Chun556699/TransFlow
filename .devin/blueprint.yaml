@@ -1,0 +1,19 @@
+runs-on: macos
+initialize: |
+  brew install --cask firefox || true
+maintenance: |
+  npm install
+knowledge:
+  - name: test
+    contents: |
+      npm test    # node --test, test/ directory
+  - name: build
+    contents: |
+      npm run build   # outputs dist/chrome and dist/firefox; npm run zip
+  - name: e2e-test
+    contents: |
+      mock: node dev/mock-server.mjs 8787; test page: python3 -m http.server 8788 --directory dev;
+      Chrome: --user-data-dir=/tmp/tf-profile --remote-debugging-port=9333;
+      load dist/chrome via CDP browser WebSocket Extensions.loadUnpacked (Chrome 142+ removed --load-extension), id jhpmcpjdpkljoekddjjnjkfendldjpgo;
+      playwright-core at /tmp/tfe2e via chromium.connectOverCDP('http://localhost:9333');
+      toggle: tabs.sendMessage(tabId,{type:'tf:toggle-page'}); state: 'tf:page-state'
