@@ -10,7 +10,7 @@ High-performance, low-footprint bilingual webpage-translation browser extension 
 
 ## 下载安装
 
-到 [**Releases**](https://github.com/Chun556699/TransFlow---/releases) 下载：`transflow-chrome.zip`（Chrome / Edge / Opera）或 `transflow-firefox.zip`（Firefox），解压后按下方「安装」加载即可。也可以自己构建：`npm install && npm run zip`。
+到 [**Releases**](https://github.com/Chun556699/TransFlow/releases) 下载：`transflow-chrome.zip`（Chrome / Edge / Opera）或 `transflow-firefox.zip`（Firefox），解压后按下方「安装」加载即可。也可以自己构建：`npm install && npm run zip`。
 
 ## 效果预览
 
@@ -80,7 +80,7 @@ Fast, low-footprint bilingual webpage-translation browser extension. A **Jev dec
 
 ## Download
 
-Grab prebuilt zips from [**Releases**](https://github.com/Chun556699/TransFlow---/releases): `transflow-chrome.zip` (Chrome / Edge / Opera) or `transflow-firefox.zip` (Firefox). Unzip and load per "Install" below — or build it yourself with `npm install && npm run zip`.
+Grab prebuilt zips from [**Releases**](https://github.com/Chun556699/TransFlow/releases): `transflow-chrome.zip` (Chrome / Edge / Opera) or `transflow-firefox.zip` (Firefox). Unzip and load per "Install" below — or build it yourself with `npm install && npm run zip`.
 
 ## Preview
 
