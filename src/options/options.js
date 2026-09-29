@@ -152,6 +152,23 @@ async function boot() {
     $('#clear-cache').textContent = '已清空 ✓';
     setTimeout(() => ($('#clear-cache').textContent = '清空译文缓存'), 2000);
   });
+  $('#import-cfg').addEventListener('click', async () => {
+    const raw = prompt('粘贴配置 JSON（如 {"settings":{...}}）');
+    if (!raw) return;
+    try {
+      const parsed = JSON.parse(raw);
+      const incoming = parsed.settings ?? parsed;
+      if (!incoming || typeof incoming !== 'object') throw new Error('bad json');
+      settings = { ...settings, ...incoming };
+      await storageSet({ settings });
+      const el = $('#saved');
+      el.textContent = '配置已导入 ✓';
+      setTimeout(() => (el.textContent = ''), 2500);
+      location.reload();
+    } catch {
+      alert('JSON 解析失败，请检查格式');
+    }
+  });
   $('#reset').addEventListener('click', async () => {
     await storageSet({ settings: DEFAULT_SETTINGS });
     location.reload();
