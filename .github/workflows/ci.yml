@@ -21,3 +21,8 @@ jobs:
           for f in dist/chrome/background.js dist/chrome/content.js dist/firefox/background.js dist/firefox/content.js; do
             node --check "$f"
           done
+      - name: zip + web-ext lint (Firefox)
+        run: |
+          npm run zip
+          test -s dist/transflow-chrome.zip && test -s dist/transflow-firefox.zip
+          npx --yes web-ext lint --source-dir dist/firefox

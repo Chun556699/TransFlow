@@ -1,6 +1,6 @@
 {
   "name": "transflow",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "description": "Fast, low-footprint bilingual webpage & video-subtitle translation extension — Jev decision layer + LLM generation layer, both endpoints user-configurable.",

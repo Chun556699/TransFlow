@@ -3,6 +3,7 @@ import { MSG, LANGUAGES, THEMES, DEFAULT_SETTINGS } from '../shared/constants.js
 import { loadSettings } from '../shared/settings.js';
 import { PROVIDERS, detectProvider, normalizeBaseUrl } from '../background/providers.js';
 import { cache } from '../background/cache.js';
+import { t, applyI18n } from './i18n.js';
 
 const $ = (s) => document.querySelector(s);
 let settings = null;
@@ -28,7 +29,7 @@ function renderModelMenu(show = true) {
   menu.replaceChildren();
   const head = document.createElement('div');
   head.className = 'mm-head';
-  head.textContent = fetchedModels ? `可用模型 ${list.length}/${fetchedModels.length}` : '推荐模型（点「获取模型」拉取你的账号可用列表）';
+  head.textContent = fetchedModels ? t('mm_fetched', { s: list.length, n: fetchedModels.length }) : t('mm_presets');
   menu.append(head);
   for (const [m, note] of list.slice(0, 300)) {
     const o = document.createElement('div');
@@ -49,7 +50,7 @@ function renderModelMenu(show = true) {
   if (!list.length) {
     const e = document.createElement('div');
     e.className = 'mm-empty';
-    e.textContent = '无匹配，按回车使用当前输入的模型名';
+    e.textContent = t('mm_empty');
     menu.append(e);
   }
   menu.hidden = !show;
@@ -81,24 +82,24 @@ async function fetchModels() {
   const btn = $('#fetch-models');
   const msg = $('#model-msg');
   btn.disabled = true;
-  btn.textContent = '获取中…';
+  btn.textContent = t('fetching');
   const resp = await sendMessage({
     type: MSG.LIST_MODELS,
     config: { baseUrl: settings.llm.baseUrl, apiKey: settings.llm.apiKey, provider: settings.llm.provider },
   }).catch((e) => ({ ok: false, error: String(e) }));
   btn.disabled = false;
-  btn.textContent = '获取模型';
+  btn.textContent = t('fetch_models');
   if (resp?.ok && resp.models?.length) {
     fetchedModels = resp.models;
     msg.className = 'test-msg ok';
-    msg.textContent = `已获取 ${resp.models.length} 个模型，可点选或继续手动输入`;
+    msg.textContent = t('got_models', { n: resp.models.length });
     $('#llm-model').focus();
     renderModelMenu();
   } else {
     msg.className = 'test-msg fail';
     msg.textContent = resp?.ok
-      ? '接口未返回模型列表，请手动输入模型名'
-      : `获取失败 ${resp?.status ?? ''} ${resp?.error ?? ''} · ${resp?.url ?? ''}`.trim();
+      ? t('no_models')
+      : `${t('fetch_fail')} ${resp?.status ?? ''} ${resp?.error ?? ''} · ${resp?.url ?? ''}`.trim();
   }
 }
 
@@ -113,10 +114,10 @@ function bind() {
   $('#jev-gate').checked = s.jev.gate;
 
   const prov = $('#llm-provider');
-  for (const [v, label] of PROVIDERS) {
+  for (const [v] of PROVIDERS) {
     const o = document.createElement('option');
     o.value = v;
-    o.textContent = label;
+    o.textContent = t(`prov_${v}`);
     prov.append(o);
   }
   prov.value = s.llm.provider ?? 'auto';
@@ -124,7 +125,7 @@ function bind() {
     const raw = $('#llm-url').value.trim();
     if (!raw) return;
     const p = detectProvider(raw, prov.value);
-    $('#llm-url-hint').textContent = `实际请求：${normalizeBaseUrl(raw, p)}（${PROVIDERS.find(([k]) => k === p)?.[1] ?? p}）`;
+    $('#llm-url-hint').textContent = `${t('resolved')}${normalizeBaseUrl(raw, p)}（${t(`prov_${p}`)}）`;
   };
   $('#llm-url').addEventListener('input', hint);
   prov.addEventListener('change', hint);
@@ -160,7 +161,7 @@ function bind() {
     const card = document.createElement('div');
     card.className = 'theme-card' + (s.appearance.theme === key ? ' on' : '');
     card.dataset.theme = key;
-    card.innerHTML = `<strong>${label}</strong><span class="demo">原文原文<br><span class="t-${key}">译文译文译文</span></span>`;
+    card.innerHTML = `<strong>${label}</strong><span class="demo">${t('theme_src')}<br><span class="t-${key}">${t('theme_tgt')}</span></span>`;
     card.addEventListener('click', () => {
       s.appearance.theme = key;
       themes.querySelectorAll('.theme-card').forEach((c) => c.classList.toggle('on', c === card));
@@ -223,7 +224,7 @@ async function save() {
   collect();
   await storageSet({ settings });
   const el = $('#saved');
-  el.textContent = '已保存 ✓ 刷新页面生效';
+  el.textContent = t('saved');
   setTimeout(() => (el.textContent = ''), 2500);
 }
 
@@ -231,7 +232,7 @@ async function testEndpoint(btn) {
   collect();
   const kind = btn.dataset.test;
   btn.classList.remove('tested-ok', 'tested-fail');
-  btn.textContent = '测试中…';
+  btn.textContent = t('testing');
   const config =
     kind === 'jev'
       ? { baseUrl: settings.jev.baseUrl, apiKey: settings.jev.apiKey }
@@ -242,14 +243,14 @@ async function testEndpoint(btn) {
           provider: settings.llm.provider,
         };
   const resp = await sendMessage({ type: MSG.TEST_ENDPOINT, kind, config });
-  btn.textContent = resp?.ok ? '连接正常 ✓' : `失败 ${resp?.status ?? ''}`;
+  btn.textContent = resp?.ok ? t('conn_ok') : `${t('conn_fail')} ${resp?.status ?? ''}`;
   btn.classList.add(resp?.ok ? 'tested-ok' : 'tested-fail');
   if (kind === 'llm') {
     const msg = $('#llm-test-msg');
     msg.className = 'test-msg ' + (resp?.ok ? 'ok' : 'fail');
     msg.textContent = resp?.ok
       ? `「Hello, world!」→「${resp.sample}」`
-      : `${resp?.error ?? '无响应'} · ${resp?.url ?? ''}`;
+      : `${resp?.error ?? t('no_response')} · ${resp?.url ?? ''}`;
   }
 }
 
@@ -269,6 +270,7 @@ function navSpy() {
 
 async function boot() {
   settings = await loadSettings();
+  applyI18n();
   bind();
   bindModelPicker();
   navSpy();
@@ -276,11 +278,11 @@ async function boot() {
   document.querySelectorAll('[data-test]').forEach((b) => b.addEventListener('click', () => testEndpoint(b)));
   $('#clear-cache').addEventListener('click', async () => {
     await cache.clear();
-    $('#clear-cache').textContent = '已清空 ✓';
-    setTimeout(() => ($('#clear-cache').textContent = '清空译文缓存'), 2000);
+    $('#clear-cache').textContent = t('cleared');
+    setTimeout(() => ($('#clear-cache').textContent = t('clear_cache')), 2000);
   });
   $('#import-cfg').addEventListener('click', async () => {
-    const raw = prompt('粘贴配置 JSON（如 {"settings":{...}}）');
+    const raw = prompt(t('paste_cfg'));
     if (!raw) return;
     try {
       const parsed = JSON.parse(raw);
@@ -289,11 +291,11 @@ async function boot() {
       settings = { ...settings, ...incoming };
       await storageSet({ settings });
       const el = $('#saved');
-      el.textContent = '配置已导入 ✓';
+      el.textContent = t('imported');
       setTimeout(() => (el.textContent = ''), 2500);
       location.reload();
     } catch {
-      alert('JSON 解析失败，请检查格式');
+      alert(t('bad_json'));
     }
   });
   $('#reset').addEventListener('click', async () => {

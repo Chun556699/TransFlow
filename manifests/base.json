@@ -2,7 +2,8 @@
   "manifest_version": 3,
   "name": "TransFlow",
   "short_name": "TransFlow",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "minimum_chrome_version": "116",
   "description": "Fast, low-footprint bilingual webpage & video-subtitle translation — Jev decision layer + LLM, both endpoints configurable.",
   "default_locale": "en",
   "permissions": ["storage", "activeTab", "contextMenus"],
@@ -22,7 +23,7 @@
       "matches": ["<all_urls>"],
       "js": ["content.js"],
       "run_at": "document_idle",
-      "all_frames": false
+      "all_frames": true
     }
   ],
   "web_accessible_resources": [

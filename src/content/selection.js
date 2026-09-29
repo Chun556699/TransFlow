@@ -166,6 +166,8 @@ export class SelectionTranslator {
       this.el.inputIcon.addEventListener('mousedown', (e) => e.preventDefault());
       this.el.inputIcon.addEventListener('click', () => this.translateInput());
       this.el.close.addEventListener('click', () => this.hideAll());
+      this.el.hd = shadow.querySelector('.hd');
+      this.bindDrag();
       this.el.copy.addEventListener('click', () => {
         void navigator.clipboard?.writeText(this.el.tgt.textContent ?? '');
         const label = this.el.copy.querySelector('span');
@@ -179,6 +181,33 @@ export class SelectionTranslator {
       this.el.replace.addEventListener('click', () => this.replaceInput());
     }
     return this.el;
+  }
+
+  bindDrag() {
+    const hd = this.el.hd;
+    const panel = this.el.panel;
+    hd.style.cursor = 'move';
+    let dx = 0;
+    let dy = 0;
+    const move = (e) => {
+      const w = panel.offsetWidth;
+      const h = panel.offsetHeight;
+      panel.style.left = `${Math.max(0, Math.min(e.clientX - dx, innerWidth - w))}px`;
+      panel.style.top = `${Math.max(0, Math.min(e.clientY - dy, innerHeight - h))}px`;
+    };
+    const up = () => {
+      document.removeEventListener('mousemove', move, true);
+      document.removeEventListener('mouseup', up, true);
+    };
+    hd.addEventListener('mousedown', (e) => {
+      if (e.target.closest('button')) return;
+      const r = panel.getBoundingClientRect();
+      dx = e.clientX - r.left;
+      dy = e.clientY - r.top;
+      e.preventDefault();
+      document.addEventListener('mousemove', move, true);
+      document.addEventListener('mouseup', up, true);
+    });
   }
 
   selectionText() {

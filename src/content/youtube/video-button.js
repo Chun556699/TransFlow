@@ -20,13 +20,21 @@ function icon() {
 }
 const KEY = 'subOn';
 
+// {host: bool} 按站点记忆；兼容早期 bool（视为全站默认）
 export async function loadSubOn(fallback) {
   const r = await storageGet(KEY).catch(() => ({}));
-  return typeof r?.[KEY] === 'boolean' ? r[KEY] : fallback;
+  const v = r?.[KEY];
+  if (typeof v === 'boolean') return v;
+  const per = v?.[location.hostname];
+  return typeof per === 'boolean' ? per : fallback;
 }
 
-export function saveSubOn(on) {
-  return storageSet({ [KEY]: on }).catch(() => {});
+export async function saveSubOn(on) {
+  const r = await storageGet(KEY).catch(() => ({}));
+  const cur = r?.[KEY];
+  const map = typeof cur === 'object' && cur ? { ...cur } : {};
+  map[location.hostname] = on;
+  return storageSet({ [KEY]: map }).catch(() => {});
 }
 
 export function makeButton(className, on, onToggle) {

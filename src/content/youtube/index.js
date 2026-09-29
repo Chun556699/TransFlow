@@ -40,7 +40,7 @@ export class YoutubeSubs {
     if (this.isYoutube) {
       window.addEventListener('yt-navigate-finish', this.onNavigate);
       this.ensureButton();
-      this.btnTimer = setInterval(() => this.ensureButton(), 1500);
+      this.watchControls();
       this.apply();
     } else if (this.settings.subtitle.genericVideo) {
       this.stopGeneric = watchGenericVideos(this.settings, this.overlay, ctl);
@@ -50,7 +50,7 @@ export class YoutubeSubs {
   stop() {
     window.removeEventListener('message', this.onMessage);
     window.removeEventListener('yt-navigate-finish', this.onNavigate);
-    clearInterval(this.btnTimer);
+    this.mo?.disconnect();
     for (const b of this.btns) b.remove();
     this.btns.clear();
     this.overlay.detach();
@@ -137,6 +137,17 @@ export class YoutubeSubs {
     void this.processTrack(d.body);
   }
 
+  // 播放器控制栏重建频繁：MutationObserver 防抖检查，不轮询
+  watchControls() {
+    let t = 0;
+    this.mo = new MutationObserver(() => {
+      if (document.querySelector('.ytp-right-controls .tf-yt-btn')) return;
+      clearTimeout(t);
+      t = setTimeout(() => this.ensureButton(), 250);
+    });
+    this.mo.observe(document.documentElement, { childList: true, subtree: true });
+  }
+
   async processTrack(body) {
     let cues = parseCaptions(body);
     if (!cues.length) return;
@@ -157,24 +168,26 @@ export class YoutubeSubs {
     );
 
     const CHUNK = 30;
-    for (let i = 0; i < cues.length; i += CHUNK) {
-      const slice = cues.slice(i, i + CHUNK);
-      let resp;
-      try {
-        resp = await sendMessage({
+    const chunks = [];
+    for (let i = 0; i < cues.length; i += CHUNK) chunks.push(i);
+    let cursor = 0;
+    const runOne = async () => {
+      while (cursor < chunks.length) {
+        const i = chunks[cursor++];
+        const slice = cues.slice(i, i + CHUNK);
+        const resp = await sendMessage({
           type: MSG.TRANSLATE,
           to,
           items: slice.map((c, j) => ({ key: `c${i + j}`, text: c.text })),
+        }).catch(() => null);
+        const results = resp?.results ?? {};
+        slice.forEach((_, j) => {
+          ocues[i + j].tgt = results[`c${i + j}`] ?? null;
         });
-      } catch {
-        continue;
+        this.overlay.setCues(ocues);
       }
-      const results = resp?.results ?? {};
-      slice.forEach((_, j) => {
-        ocues[i + j].tgt = results[`c${i + j}`] ?? null;
-      });
-      this.overlay.setCues(ocues);
-    }
+    };
+    await Promise.all([runOne(), runOne(), runOne()]);
   }
 
   reset() {

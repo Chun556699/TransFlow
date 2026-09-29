@@ -26,7 +26,7 @@ High-performance, low-footprint bilingual webpage-translation browser extension 
 - **视频字幕**：YouTube 双语字幕（拦截播放器 timedtext 请求复用其签名 URL，绕开 PoToken 限制；ASR 逐词字幕自动断句合并）；其他站点原生 CC 轨道兜底翻译；播放器内嵌「译」按钮一键开关
 - **划词翻译**：选中文字出现浮窗（原文 + 译文 + 复制）；输入框聚焦出现翻译按钮，中英自动互译、可一键替换输入为译文；右键菜单与 `Alt+S` 快捷键同入口
 - **低占用**：零运行时依赖，content script ≈24KB、background ≈20KB、无重框架、后台零常驻状态
-- **主流浏览器适配**：Chrome / Edge / Opera（MV3 service worker）、Firefox（MV3 event page）、Safari（`safari-web-extension-converter`）、iOS（Userscripts 油猴形态）
+- **主流浏览器适配**：Chrome / Edge / Opera（MV3 service worker）、Firefox（MV3 event page）、Safari（`safari-web-extension-converter`）
 
 ## 安装（开发者模式）
 
@@ -96,7 +96,7 @@ Grab prebuilt zips from [**Releases**](https://github.com/Chun556699/TransFlow/r
 - **Video subtitles**: bilingual YouTube subtitles (intercepts the player's signed timedtext request, sidestepping PoToken; ASR word-level captions merged into sentences) with an in-player「译」toggle button; generic `<video>` CC-track fallback elsewhere.
 - **Selection & input translation**: select text for a popover (original + translation + copy); focused inputs get a「译」button — Chinese auto-translates to English and vice versa, one click replaces the input; same entry via context menu and `Alt+S`.
 - **Low footprint**: zero runtime dependencies, ~24KB content script, ~20KB background, no heavy frameworks, no persistent background state.
-- **Broad browser support**: Chrome / Edge / Opera (MV3 service worker), Firefox (MV3 event page), Safari via `safari-web-extension-converter`, iOS in Userscripts form.
+- **Broad browser support**: Chrome / Edge / Opera (MV3 service worker), Firefox (MV3 event page), Safari via `safari-web-extension-converter`.
 
 ## Install (developer mode)
 

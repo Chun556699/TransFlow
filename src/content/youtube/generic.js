@@ -7,11 +7,20 @@ import { makeButton } from './video-button.js';
 // 复用同一 overlay 双语渲染
 export function watchGenericVideos(settings, overlay, ctl) {
   const withBtn = new WeakSet();
-  const done = new WeakSet();
+  const done = new WeakMap(); // video -> 轨道签名，换源后重译
   const tick = () => scan(settings, overlay, ctl, withBtn, done);
-  const timer = setInterval(tick, 2000);
+  let t = 0;
+  const schedule = () => {
+    clearTimeout(t);
+    t = setTimeout(tick, 300);
+  };
+  const mo = new MutationObserver(schedule);
+  mo.observe(document.documentElement, { childList: true, subtree: true });
   tick();
-  return () => clearInterval(timer);
+  return () => {
+    mo.disconnect();
+    clearTimeout(t);
+  };
 }
 
 function scan(settings, overlay, ctl, withBtn, done) {
@@ -25,13 +34,16 @@ function scan(settings, overlay, ctl, withBtn, done) {
       const b = makeButton('tf-vbtn', ctl.isOn(), (on) => ctl.toggle(on));
       ctl.register(b);
       box.append(b);
+      video.addEventListener('loadstart', () => done.delete(video));
     }
-    if (!ctl.isOn() || done.has(video) || !tracks.length) continue;
+    if (!ctl.isOn() || !tracks.length) continue;
     const track = tracks.find((t) => t.mode === 'showing') ?? tracks[0];
     if (track.mode === 'disabled') track.mode = settings.subtitle.hideNative ? 'hidden' : 'showing';
     if (settings.subtitle.hideNative && track.mode === 'showing') track.mode = 'hidden';
     if (!track.cues?.length) continue;
-    done.add(video);
+    const sig = `${video.currentSrc || video.src}|${track.srclang}|${track.src}`;
+    if (done.get(video) === sig) continue;
+    done.set(video, sig);
     void translateTrack(video, track, settings, overlay);
   }
 }

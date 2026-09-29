@@ -32,6 +32,16 @@ export class SubtitleOverlay {
     video.addEventListener('seeked', this.onTime);
   }
 
+  updateSettings(s) {
+    this.settings = s;
+    if (!this.el) return;
+    this.el.dataset.order = s.bilingualOrder;
+    this.el.style.fontSize = `${s.fontSize}px`;
+    this.el.style.bottom = s.position === 'top' ? 'auto' : '8%';
+    this.el.style.top = s.position === 'top' ? '8%' : 'auto';
+    this.render();
+  }
+
   setVisible(on) {
     this.hidden = !on;
     this.render();
