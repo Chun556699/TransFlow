@@ -32,6 +32,11 @@ export class SubtitleOverlay {
     video.addEventListener('seeked', this.onTime);
   }
 
+  setVisible(on) {
+    this.hidden = !on;
+    this.render();
+  }
+
   setCues(cues) {
     this.cues = cues;
     this.render();
@@ -41,7 +46,7 @@ export class SubtitleOverlay {
     if (!this.el || !this.video) return;
     const ms = this.video.currentTime * 1000;
     const cue = this.current(ms);
-    if (!cue) {
+    if (!cue || this.hidden) {
       this.el.style.visibility = 'hidden';
       return;
     }

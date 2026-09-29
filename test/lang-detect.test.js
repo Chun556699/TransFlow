@@ -28,3 +28,11 @@ test('isTranslatableText: 过滤垃圾文本', () => {
   assert.equal(isTranslatableText('https://example.com/path'), false);
   assert.equal(isTranslatableText('｜｜｜---'), false);
 });
+
+test('pairTarget: 中文→英文，其它→目标语', async () => {
+  const { pairTarget } = await import('../src/shared/lang-detect.js');
+  assert.equal(pairTarget('今天天气很好', 'zh-CN'), 'en');
+  assert.equal(pairTarget('The weather is nice', 'zh-CN'), 'zh-CN');
+  assert.equal(pairTarget('こんにちは世界', 'zh-CN'), 'zh-CN');
+  assert.equal(pairTarget('Hello there', 'en'), 'zh-CN');
+});

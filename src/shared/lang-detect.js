@@ -58,3 +58,10 @@ export function isTranslatableText(text) {
   if (!/\p{L}/u.test(t)) return false;
   return true;
 }
+
+// 双向目标语：原文已是目标语（如中文）时反向译成英文，否则译为目标语
+export function pairTarget(text, targetLang) {
+  const src = guessLang(text);
+  if (!sameLang(src, targetLang)) return targetLang;
+  return targetLang.startsWith('en') ? 'zh-CN' : 'en';
+}

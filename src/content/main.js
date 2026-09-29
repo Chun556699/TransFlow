@@ -59,13 +59,11 @@ async function boot() {
       : autoStart();
   }
 
-  if (settings.subtitle.enabled) {
-    subs = new YoutubeSubs(settings);
-    const startSubs = () => subs.start();
-    document.readyState === 'loading'
-      ? document.addEventListener('DOMContentLoaded', startSubs, { once: true })
-      : startSubs();
-  }
+  subs = new YoutubeSubs(settings);
+  const startSubs = () => subs.start();
+  document.readyState === 'loading'
+    ? document.addEventListener('DOMContentLoaded', startSubs, { once: true })
+    : startSubs();
 
   if (settings.selection?.enabled !== false) {
     sel = new SelectionTranslator(settings);

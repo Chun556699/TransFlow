@@ -1,6 +1,6 @@
 import { sendMessage } from '../shared/browser.js';
 import { MSG } from '../shared/constants.js';
-import { isTranslatableText } from '../shared/lang-detect.js';
+import { isTranslatableText, pairTarget } from '../shared/lang-detect.js';
 
 // 划词翻译 + 输入框翻译：Shadow DOM 浮层，不与页面 CSS 互相影响
 const CSS = `
@@ -227,7 +227,7 @@ export class SelectionTranslator {
     try {
       const resp = await sendMessage({
         type: MSG.TRANSLATE,
-        to: this.settings.targetLang,
+        to: pairTarget(text, this.settings.targetLang),
         items: [{ key: 's', text }],
       });
       const t = resp?.results?.s;

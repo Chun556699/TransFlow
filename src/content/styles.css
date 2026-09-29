@@ -116,3 +116,43 @@ body[data-tf-only='1'] *:has(> .tf-translation) > .tf-translation {
 .tf-sub-overlay[data-order='translated-top'] .tf-sub-tgt {
   order: -1;
 }
+
+/* 视频内「译」按钮 */
+.tf-yt-btn {
+  position: relative;
+  opacity: 0.9;
+}
+.tf-yt-btn[aria-pressed='true']::after {
+  content: '';
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  bottom: 22%;
+  height: 3px;
+  border-radius: 2px;
+  background: #ff3b30;
+}
+.tf-vbtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 41;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+*:hover > .tf-vbtn,
+.tf-vbtn:focus-visible,
+.tf-vbtn[aria-pressed='true'] {
+  opacity: 1;
+}
+.tf-vbtn[aria-pressed='true'] {
+  background: linear-gradient(135deg, #4f7cff, #7b5cff);
+}
