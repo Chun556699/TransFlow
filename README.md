@@ -27,7 +27,8 @@ npm run zip      # 额外产出可分发 zip
 
 ## 使用
 
-1. 打开设置页，填 **LLM** 端点（任意 OpenAI 兼容 `/chat/completions`，如 OpenAI / DeepSeek / 本地 vLLM）与 API Key、模型名
+1. 打开设置页，填 **LLM** 端点（任意 OpenAI 兼容 `/chat/completions`，如 OpenAI / DeepSeek / 本地 vLLM / 阿里百炼 `…/compatible-mode/v1`）与 API Key、模型名
+   - 推荐：阿里百炼 **qwen-mt-turbo**（专用翻译模型，逐条调用，并发池并行；支持术语表）；或任意通用对话模型（走 JSON 批量，如 `qwen3.8-flash`、`gpt-4o-mini`）
 2. （可选）填 **Jev** 端点：官方 `https://api.typesafe.ai/v1/systemone` 或自托管兼容端点（decider-2b、openjev 等）
 3. 网页中点击扩展图标 →「翻译此页」，或按 `Alt+T`；双语译文随滚动懒加载
 4. YouTube 打开播放器原生字幕后，自动出现双语字幕层

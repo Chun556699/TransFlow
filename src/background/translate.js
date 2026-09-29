@@ -63,7 +63,9 @@ export async function translateItems(items, targetLang, settings) {
       glossary: settings.pipeline.glossary,
     });
     const pool = makePool(settings.pipeline.concurrency);
-    const batches = chunkBySize(toTranslate, settings.pipeline.batchSize, settings.pipeline.maxChars);
+    // Qwen-MT 等专用翻译模型按条请求，批大小设为 1 由并发池并行
+    const batchSize = llm.isMt ? 1 : settings.pipeline.batchSize;
+    const batches = chunkBySize(toTranslate, batchSize, settings.pipeline.maxChars);
     await Promise.all(
       batches.map((batch) =>
         pool(async () => {

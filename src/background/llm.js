@@ -1,5 +1,27 @@
 import { retry, timeoutSignal } from './pool.js';
 
+// 阿里 Qwen-MT 专用翻译模型：不支持 system role / JSON 批量，
+// 需要逐条调 translation_options 指定语种（英文名而非 BCP-47）
+const MT_MODEL = /^qwen-mt/i;
+const MT_LANG = {
+  'zh-CN': 'Chinese',
+  'zh-TW': 'Traditional Chinese',
+  yue: 'Cantonese',
+  en: 'English',
+  ja: 'Japanese',
+  ko: 'Korean',
+  fr: 'French',
+  de: 'German',
+  es: 'Spanish',
+  ru: 'Russian',
+  pt: 'Portuguese',
+  it: 'Italian',
+  th: 'Thai',
+  vi: 'Vietnamese',
+  ar: 'Arabic',
+  hi: 'Hindi',
+};
+
 const SYSTEM = `You are a translation engine embedded in a browser extension.
 Rules:
 - Translate each JSON array element into the target language.
@@ -18,7 +40,16 @@ export class LlmClient {
     this.glossary = glossary;
   }
 
+  get isMt() {
+    return MT_MODEL.test(this.model);
+  }
+
   async translate(texts, targetLang) {
+    if (this.isMt) {
+      const out = [];
+      for (const t of texts) out.push(await this.translateMt(t, targetLang));
+      return out;
+    }
     const payload = {
       model: this.model,
       temperature: this.temperature,
@@ -38,6 +69,27 @@ export class LlmClient {
     const lined = lineAlign(raw, texts.length);
     if (lined) return lined;
     throw new Error('misaligned translation');
+  }
+
+  async translateMt(text, targetLang) {
+    const terms = this.glossary
+      .split('\n')
+      .map((l) => l.split(/[=→]/).map((s) => s.trim()))
+      .filter((p) => p.length === 2 && p[0] && p[1])
+      .map(([source, target]) => ({ source, target }));
+    const payload = {
+      model: this.model,
+      temperature: this.temperature,
+      messages: [{ role: 'user', content: text }],
+      translation_options: {
+        source_lang: 'auto',
+        target_lang: MT_LANG[targetLang] ?? targetLang,
+        ...(terms.length ? { terms } : {}),
+      },
+    };
+    const raw = await retry(() => this.chat(payload), { tries: 2 });
+    if (!raw) throw new Error('empty mt result');
+    return raw;
   }
 
   async chat(payload) {
