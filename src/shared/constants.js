@@ -5,6 +5,7 @@ export const MSG = {
   SET_LANG: 'tf:set-lang',
   SUBTITLE_EVENT: 'tf:subtitle-event',
   TEST_ENDPOINT: 'tf:test-endpoint',
+  TRANSLATE_SELECTION: 'tf:translate-selection',
 };
 
 export const DEFAULT_SETTINGS = {
@@ -30,6 +31,10 @@ export const DEFAULT_SETTINGS = {
     maxChars: 5000,
     concurrency: 4,
     glossary: '',
+  },
+  selection: {
+    enabled: true,
+    inputEnabled: true,
   },
   appearance: {
     theme: 'underline',

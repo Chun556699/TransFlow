@@ -33,13 +33,20 @@ function parseXml(s) {
   try {
     const doc = new DOMParser().parseFromString(s, 'text/xml');
     const cues = [];
+    // srv1: <text start="s" dur="s">；srv3: <p t="ms" d="ms">（子 <s> 逐词）
     for (const el of doc.querySelectorAll('text')) {
       const start = Number(el.getAttribute('start') ?? 0) * 1000;
       const dur = Number(el.getAttribute('dur') ?? 0) * 1000;
       const text = (el.textContent ?? '').replace(/\s+/g, ' ').trim();
       if (text) cues.push({ start, end: start + dur, text });
     }
-    return cues;
+    for (const el of doc.querySelectorAll('p')) {
+      const start = Number(el.getAttribute('t') ?? 0);
+      const dur = Number(el.getAttribute('d') ?? 0);
+      const text = (el.textContent ?? '').replace(/\s+/g, ' ').trim();
+      if (text) cues.push({ start, end: start + dur, text });
+    }
+    return cues.sort((a, b) => a.start - b.start);
   } catch {
     return [];
   }

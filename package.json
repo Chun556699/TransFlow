@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "node scripts/build.mjs --watch",
     "build": "node scripts/build.mjs",
-    "zip": "node scripts/build.mjs --zip"
+    "zip": "node scripts/build.mjs --zip",
+    "test": "node --test"
   },
   "devDependencies": {
     "esbuild": "^0.25.0"

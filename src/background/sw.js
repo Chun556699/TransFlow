@@ -51,12 +51,42 @@ async function testEndpoint(msg) {
 
 api.runtime.onInstalled?.addListener(() => {
   void cache.trim();
+  setupMenus();
+});
+
+api.runtime.onStartup?.addListener(() => setupMenus());
+
+const menus = api.contextMenus ?? api.menus;
+function setupMenus() {
+  if (!menus?.create) return;
+  try {
+    menus.removeAll?.(() => void api.runtime.lastError);
+    menus.create({ id: 'tf-page', title: '翻译此页 / 恢复原文', contexts: ['page'] });
+    menus.create({ id: 'tf-selection', title: '用 TransFlow 翻译选中内容', contexts: ['selection'] });
+  } catch {
+    /* 已存在则忽略 */
+  }
+}
+menus?.onClicked?.addListener?.((info, tab) => {
+  const id = tab?.id;
+  if (!id) return;
+  if (info.menuItemId === 'tf-page') {
+    api.tabs.sendMessage(id, { type: MSG.TOGGLE_PAGE }, () => void api.runtime.lastError);
+  } else if (info.menuItemId === 'tf-selection') {
+    api.tabs.sendMessage(id, { type: MSG.TRANSLATE_SELECTION }, () => void api.runtime.lastError);
+  }
 });
 
 api.commands?.onCommand?.addListener((command) => {
-  if (command !== 'toggle-page') return;
+  const type =
+    command === 'toggle-page'
+      ? MSG.TOGGLE_PAGE
+      : command === 'translate-selection'
+        ? MSG.TRANSLATE_SELECTION
+        : null;
+  if (!type) return;
   api.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const id = tabs[0]?.id;
-    if (id) api.tabs.sendMessage(id, { type: MSG.TOGGLE_PAGE }, () => void api.runtime.lastError);
+    if (id) api.tabs.sendMessage(id, { type }, () => void api.runtime.lastError);
   });
 });

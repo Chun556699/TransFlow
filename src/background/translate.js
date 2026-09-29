@@ -62,8 +62,9 @@ export async function translateItems(items, targetLang, settings) {
       temperature: settings.llm.temperature,
       glossary: settings.pipeline.glossary,
     });
-    const pool = makePool(settings.pipeline.concurrency);
-    // Qwen-MT 等专用翻译模型按条请求，批大小设为 1 由并发池并行
+    // Qwen-MT 等专用翻译模型按条请求：批大小 1 + 提高并发由池并行
+    const conc = llm.isMt ? Math.min(Math.max(settings.pipeline.concurrency * 3, 12), 16) : settings.pipeline.concurrency;
+    const pool = makePool(conc);
     const batchSize = llm.isMt ? 1 : settings.pipeline.batchSize;
     const batches = chunkBySize(toTranslate, batchSize, settings.pipeline.maxChars);
     await Promise.all(
@@ -132,7 +133,7 @@ async function jevGate(items, targetLang, settings) {
   return marks;
 }
 
-function chunkBySize(items, count, maxChars) {
+export function chunkBySize(items, count, maxChars) {
   const batches = [];
   let cur = [];
   let chars = 0;

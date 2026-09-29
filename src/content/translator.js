@@ -10,7 +10,7 @@ import {
 } from './dom-scan.js';
 
 const FLUSH_COUNT = 20;
-const FLUSH_MS = 280;
+const FLUSH_MS = 200;
 
 export class PageTranslator {
   constructor() {

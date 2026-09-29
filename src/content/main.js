@@ -3,10 +3,12 @@ import { MSG } from '../shared/constants.js';
 import { loadSettings, matchHost } from '../shared/settings.js';
 import { PageTranslator } from './translator.js';
 import { YoutubeSubs } from './youtube/index.js';
+import { SelectionTranslator } from './selection.js';
 import cssText from './styles.css';
 
 let translator = null;
 let subs = null;
+let sel = null;
 let settings = null;
 
 function injectStyles() {
@@ -64,6 +66,14 @@ async function boot() {
       ? document.addEventListener('DOMContentLoaded', startSubs, { once: true })
       : startSubs();
   }
+
+  if (settings.selection?.enabled !== false) {
+    sel = new SelectionTranslator(settings);
+    const startSel = () => sel.start();
+    document.readyState === 'loading'
+      ? document.addEventListener('DOMContentLoaded', startSel, { once: true })
+      : startSel();
+  }
 }
 
 api.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
@@ -84,6 +94,11 @@ api.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   }
   if (msg.type === MSG.PAGE_STATE) {
     sendResponse(translator?.state ?? { enabled: false });
+    return false;
+  }
+  if (msg.type === MSG.TRANSLATE_SELECTION) {
+    void sel?.translateContext();
+    sendResponse({ ok: true });
     return false;
   }
   return false;

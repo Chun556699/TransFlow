@@ -10,6 +10,7 @@
 - **秒翻体验**：视口懒翻译（IntersectionObserver）、批量请求、IndexedDB 译文缓存、动态内容增量扫描
 - **高颜值双语样式**：5 套主题（细线下划线 / 磨砂卡片 / 高亮 / 柔和灰显 / 悬停显字）+ 自定义强调色、字号、CSS
 - **视频字幕**：YouTube 双语字幕（拦截播放器 timedtext 请求复用其签名 URL，绕开 PoToken 限制；ASR 逐词字幕自动断句合并）；其他站点原生 CC 轨道兜底翻译
+- **划词翻译**：选中文字出现浮窗（原文 + 译文 + 复制）；输入框聚焦出现翻译按钮，可一键替换输入为译文；右键菜单与 `Alt+S` 快捷键同入口
 - **低占用**：零运行时依赖，content script ≈24KB、background ≈20KB、无重框架、后台零常驻状态
 - **主流浏览器适配**：Chrome / Edge / Opera（MV3 service worker）、Firefox（MV3 event page）、Safari（`safari-web-extension-converter`）、iOS（Userscripts 油猴形态）
 
@@ -31,6 +32,7 @@ npm run zip      # 额外产出可分发 zip
    - 推荐：阿里百炼 **qwen-mt-turbo**（专用翻译模型，逐条调用，并发池并行；支持术语表）；或任意通用对话模型（走 JSON 批量，如 `qwen3.8-flash`、`gpt-4o-mini`）
 2. （可选）填 **Jev** 端点：官方 `https://api.typesafe.ai/v1/systemone` 或自托管兼容端点（decider-2b、openjev 等）
 3. 网页中点击扩展图标 →「翻译此页」，或按 `Alt+T`；双语译文随滚动懒加载
+   - 选中文字点「译」浮窗图标（或右键菜单 / `Alt+S`）即可划词翻译；输入框聚焦点右下「译」可翻译并替换输入
 4. YouTube 打开播放器原生字幕后，自动出现双语字幕层
 
 ## 架构

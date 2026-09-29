@@ -72,11 +72,7 @@ export class LlmClient {
   }
 
   async translateMt(text, targetLang) {
-    const terms = this.glossary
-      .split('\n')
-      .map((l) => l.split(/[=→]/).map((s) => s.trim()))
-      .filter((p) => p.length === 2 && p[0] && p[1])
-      .map(([source, target]) => ({ source, target }));
+    const terms = parseMtTerms(this.glossary);
     const payload = {
       model: this.model,
       temperature: this.temperature,
@@ -116,6 +112,14 @@ export class LlmClient {
       done();
     }
   }
+}
+
+export function parseMtTerms(glossary) {
+  return String(glossary ?? '')
+    .split('\n')
+    .map((l) => l.split(/[=→]/).map((s) => s.trim()))
+    .filter((p) => p.length === 2 && p[0] && p[1])
+    .map(([source, target]) => ({ source, target }));
 }
 
 function safeJson(s) {

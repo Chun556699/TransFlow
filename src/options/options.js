@@ -34,6 +34,8 @@ function bind() {
   $('#maxchars').value = s.pipeline.maxChars;
   $('#concurrency').value = s.pipeline.concurrency;
   $('#glossary').value = s.pipeline.glossary;
+  $('#sel-enabled').checked = s.selection?.enabled !== false;
+  $('#sel-input').checked = s.selection?.inputEnabled !== false;
 
   $('#accent').value = s.appearance.accent;
   $('#fontscale').value = s.appearance.fontScale;
@@ -82,6 +84,9 @@ function collect() {
   s.pipeline.maxChars = Number($('#maxchars').value) || DEFAULT_SETTINGS.pipeline.maxChars;
   s.pipeline.concurrency = Number($('#concurrency').value) || DEFAULT_SETTINGS.pipeline.concurrency;
   s.pipeline.glossary = $('#glossary').value;
+  s.selection ??= {};
+  s.selection.enabled = $('#sel-enabled').checked;
+  s.selection.inputEnabled = $('#sel-input').checked;
 
   s.appearance.accent = $('#accent').value;
   s.appearance.fontScale = Number($('#fontscale').value);

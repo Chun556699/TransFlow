@@ -18,7 +18,7 @@ export async function loadSettings() {
 export function matchHost(host, patterns) {
   const h = host.toLowerCase();
   return patterns.some((p) => {
-    const pat = p.trim().toLowerCase();
+    const pat = p.trim().toLowerCase().replace(/^\*\./, '');
     if (!pat) return false;
     return h === pat || h.endsWith('.' + pat);
   });
