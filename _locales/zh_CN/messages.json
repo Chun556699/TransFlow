@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "TransFlow",
+    "description": "扩展名称"
+  },
+  "appDesc": {
+    "message": "高性能低占用双语网页翻译扩展 —— Jev 快决策层 + LLM 生成层，端点均可自定义。",
+    "description": "扩展描述"
+  }
+}

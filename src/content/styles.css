@@ -1,0 +1,111 @@
+/* TransFlow 注入样式：主题由 body[data-tf-theme] 与 CSS 变量控制 */
+:root {
+  --tf-accent: #4f7cff;
+  --tf-scale: 0.95;
+}
+.tf-translation {
+  display: block;
+  font-size: calc(1em * var(--tf-scale));
+  line-height: 1.55;
+  margin-top: 0.2em;
+  word-break: break-word;
+  unicode-bidi: plaintext;
+  text-align: start;
+}
+a + .tf-translation,
+button + .tf-translation,
+label + .tf-translation {
+  display: inline;
+  margin-top: 0;
+  margin-left: 0.35em;
+}
+
+/* 主题：细线下划线 */
+body[data-tf-theme='underline'] .tf-translation {
+  color: color-mix(in srgb, currentColor 72%, var(--tf-accent));
+  border-bottom: 1px dashed color-mix(in srgb, var(--tf-accent) 55%, transparent);
+  padding-bottom: 1px;
+}
+body[data-tf-theme='underline'] .tf-translation:hover {
+  border-bottom-style: solid;
+}
+
+/* 主题：磨砂卡片 */
+body[data-tf-theme='card'] .tf-translation {
+  background: color-mix(in srgb, var(--tf-accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tf-accent) 22%, transparent);
+  border-radius: 8px;
+  padding: 0.35em 0.6em;
+}
+
+/* 主题：高亮 */
+body[data-tf-theme='highlight'] .tf-translation {
+  background: color-mix(in srgb, #ffd94d 45%, transparent);
+  border-radius: 4px;
+  padding: 0 0.2em;
+}
+
+/* 主题：柔和灰显 */
+body[data-tf-theme='soft'] .tf-translation {
+  opacity: 0.62;
+}
+body[data-tf-theme='soft'] .tf-translation:hover {
+  opacity: 1;
+}
+
+/* 主题：悬停显字（学习模式） */
+body[data-tf-theme='mask'] .tf-translation {
+  filter: blur(4px);
+  opacity: 0.75;
+  transition: filter 0.15s ease;
+}
+body[data-tf-theme='mask'] .tf-translation:hover {
+  filter: none;
+  opacity: 1;
+}
+
+/* 仅译文模式：折叠原文节点，保留译文 */
+body[data-tf-only='1'] *:has(> .tf-translation) > :not(.tf-translation):not(.tf-keep) {
+  display: none;
+}
+body[data-tf-only='1'] *:has(> .tf-translation) {
+  font-size: 0;
+}
+body[data-tf-only='1'] *:has(> .tf-translation) > .tf-translation {
+  font-size: medium;
+}
+
+/* 待翻占位微光 */
+.tf-pending {
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
+}
+
+/* YouTube 字幕层 */
+.tf-sub-overlay {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  max-width: 88%;
+  text-align: center;
+  pointer-events: none;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.35;
+  padding: 0.15em 0.5em;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+.tf-sub-overlay .tf-sub-src {
+  display: block;
+  opacity: 0.82;
+  font-size: 0.82em;
+}
+.tf-sub-overlay .tf-sub-tgt {
+  display: block;
+  font-weight: 600;
+}
+.tf-sub-overlay[data-order='translated-top'] .tf-sub-tgt {
+  order: -1;
+}
